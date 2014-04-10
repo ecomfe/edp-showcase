@@ -1,7 +1,4 @@
-exports.port = 8848;
-exports.directoryIndexes = true;
-exports.documentRoot = __dirname;
-exports.getLocations = function () {
+function getLocations() {
     return [
         { 
             location: /\/$/, 
@@ -67,6 +64,13 @@ function mockup() {
     }
 }
 
+exports.port = 8848;
+exports.directoryIndexes = true;
+exports.documentRoot = __dirname;
+exports.init = function( config, start ){
+    config.getLocations = getLocations;
+    setTimeout( start, 3000 );
+};
 exports.injectResource = function ( res ) {
     for ( var key in res ) {
         global[ key ] = res[ key ];
