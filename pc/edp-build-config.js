@@ -1,26 +1,30 @@
-exports.input = __dirname;
-
 var path = require( 'path' );
-exports.output = path.resolve( __dirname, 'output' );
 
-// var moduleEntries = 'html,htm,phtml,tpl,vm,js';
-// var pageEntries = 'html,htm,phtml,tpl,vm';
-
-exports.getProcessors = function () {
-    var lessProcessor = new LessCompiler();
-    var cssProcessor = new CssCompressor();
-    var moduleProcessor = new ModuleCompiler();
-    var jsProcessor = new JsCompressor();
-    var pathMapperProcessor = new PathMapper();
-    var addCopyright = new AddCopyright();
+function getProcessors() {
+    var l = new LessCompiler({
+        files: [
+            'index.html',
+            'src/common/css/main.less'
+        ]
+    });
+    var c = new CssCompressor();
+    var m = new ModuleCompiler();
+    var j = new JsCompressor();
+    var p = new PathMapper();
+    var a = new AddCopyright();
 
     return {
-        'default': [ lessProcessor, moduleProcessor, pathMapperProcessor ],
-        'release': [
-            lessProcessor, cssProcessor, moduleProcessor,
-            jsProcessor, pathMapperProcessor, addCopyright
-        ]
+        'default': [ l, m, p ],
+        'release': [ l, c, m, j, p, a ]
     };
+};
+
+exports.input = __dirname;
+exports.output = path.resolve( __dirname, 'output' );
+
+exports.init = function( config, start ) {
+    config.getProcessors = getProcessors;
+    setTimeout( start, 2000 );
 };
 
 exports.exclude = [
