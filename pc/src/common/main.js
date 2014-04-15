@@ -13,7 +13,7 @@ define(
          * @inner
          */
         function requireConfigs() {
-            require( '../promotion/ad/config' );
+            require( '../promotion/config' );
             // require( '../plan/config' );
             // require( '../report/config' );
         }

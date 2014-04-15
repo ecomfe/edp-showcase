@@ -68,9 +68,9 @@
         }
     },
     "bat-ria": {
-        "0.1.4": {
+        "0.1.6": {
             "name": "bat-ria",
-            "version": "0.1.4",
+            "version": "0.1.6",
             "main": "main"
         }
     },

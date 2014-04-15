@@ -1,7 +1,17 @@
-function getLocations() {
+exports.port = 8848;
+exports.directoryIndexes = true;
+exports.documentRoot = __dirname;
+
+var mockup = require('./tools/mockup');
+var upload = require('./tools/upload');
+var cors = require('./tools/cors');
+
+exports.getLocations = function () {
     return [
         { 
-            location: /\/$/, 
+            location: function(request) {
+                return /\/$/.test(request.pathname);
+            },
             handler: home( 'index.html' )
         },
         { 
@@ -41,36 +51,20 @@ function getLocations() {
             ]
         },
         {
-            location: /^\/data\//,
-            handler: [
-                mockup(),
-                file()
-            ]
+            location: mockup.getLocation(),
+            handler: mockup.getHandlers()
         },
         { 
-            location: /^.*$/, 
-            handler: [
-                file(),
-                proxyNoneExists()
-            ]
+            location: upload.getLocation(), 
+            handler: upload.getHandlers()
+        },
+        { 
+            location: cors.getLocation(), 
+            handler: cors.getHandlers()
         }
     ];
 };
 
-function mockup() {
-    return function( context ){
-        var pathname = context.request.pathname;
-        context.request.pathname = '/src/mockup/' + pathname + '.json';
-    }
-}
-
-exports.port = 8848;
-exports.directoryIndexes = true;
-exports.documentRoot = __dirname;
-exports.init = function( config, start ){
-    config.getLocations = getLocations;
-    setTimeout( start, 3000 );
-};
 exports.injectResource = function ( res ) {
     for ( var key in res ) {
         global[ key ] = res[ key ];

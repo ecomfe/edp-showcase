@@ -12,6 +12,8 @@ define(
         var util = require('er/util');
         var u = require('underscore');
         var UIView = require('ef/UIView');
+        var Dialog = require('esui/Dialog');
+        var Deferred = require('er/Deferred');
 
         /**
          * 视图基类
@@ -40,7 +42,10 @@ define(
 
             // 作为子Action嵌入页面时，模板使用`xxxMain`这个target
             if (this.model && this.model.get('isChildAction')) {
-                templateName += '_child';
+                var childTemplateName = templateName + '_child';
+                if (require('etpl').get(childTemplateName)) {
+                    templateName = childTemplateName;
+                }
             }
 
             return templateName;
@@ -122,7 +127,7 @@ define(
         };
 
         BaseView.prototype.waitDialog = function (dialog, options) {
-            if (!dialog instanceof require('esui/Dialog')) {
+            if (!dialog instanceof Dialog) {
                 options = dialog;
                 dialog = this.popDialog.apply(this, options);
             }
@@ -149,7 +154,6 @@ define(
                 cancelBtn.on('click', lib.curry(btnClickHandler, dialog, 'cancel'));
             }
 
-            var Deferred = require('er/Deferred');
             var deferred = new Deferred();
 
             dialog.on('ok', deferred.resolver.resolve);
@@ -168,7 +172,6 @@ define(
          */
         BaseView.prototype.waitConfirm = function () {
             var dialog = this.confirm.apply(this, arguments);
-            var Deferred = require('er/Deferred');
             var deferred = new Deferred();
 
             dialog.on('ok', deferred.resolver.resolve);
@@ -186,8 +189,7 @@ define(
          */
         BaseView.prototype.waitActionDialog = function () {
             var dialog = this.popActionDialog.apply(this, arguments);
-
-            var Deferred = require('er/Deferred');
+            
             var deferred = new Deferred();
 
             dialog.on('actionloaded', deferred.resolver.resolve);
