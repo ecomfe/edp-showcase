@@ -7,9 +7,24 @@ exports.output = path.resolve( __dirname, 'output' );
 // var pageEntries = 'html,htm,phtml,tpl,vm';
 
 exports.getProcessors = function () {
-    var lessProcessor = new LessCompiler();
-    var cssProcessor = new CssCompressor();
+    var lessProcessor = new LessCompiler({
+        files: [ 'src/common/css/main.less' ]
+    });
+    var cssProcessor = new CssCompressor({
+        files: [
+            'src/common/css/main.less',
+            '*.css'
+        ]
+    });
     var moduleProcessor = new ModuleCompiler();
+    var tplMerger = new TplMerge({
+        // ../tpl 不应该有的，但是TplMerge有个BUG
+        pluginIds: [ 'bat-ria/tpl', '../tpl' ],
+        files: [
+            'src/**/*.js',
+            'dep/bat-ria/**/*.js'
+        ]
+    });
     var jsProcessor = new JsCompressor();
     var pathMapperProcessor = new PathMapper();
     var addCopyright = new AddCopyright();
@@ -17,7 +32,7 @@ exports.getProcessors = function () {
     return {
         'default': [ lessProcessor, moduleProcessor, pathMapperProcessor ],
         'release': [
-            lessProcessor, cssProcessor, moduleProcessor,
+            lessProcessor, cssProcessor, moduleProcessor, tplMerger,
             jsProcessor, pathMapperProcessor, addCopyright
         ]
     };
